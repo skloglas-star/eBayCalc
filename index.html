@@ -1,0 +1,190 @@
+<html>
+<head>
+<title>Калькулятор прибыли eBay</title>
+
+<HTA:APPLICATION
+APPLICATIONNAME="eBay Profit Calculator"
+BORDER="thin"
+CAPTION="yes"
+SHOWINTASKBAR="yes"
+SINGLEINSTANCE="yes"
+WINDOWSTATE="normal"
+/>
+
+<style>
+body{
+    font-family: Arial;
+    padding:20px;
+    background:#f5f5f5;
+}
+
+.inputBlock{
+    background:#ffd6d6;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:15px;
+}
+
+.resultBlock{
+    background:#d6ffd6;
+    padding:15px;
+    border-radius:10px;
+}
+
+label{
+    display:block;
+    margin-top:8px;
+}
+
+input{
+    width:180px;
+    padding:4px;
+}
+
+.result{
+    font-weight:bold;
+    margin-top:8px;
+}
+</style>
+
+<script language="javascript">
+
+function round2(v){
+    return Math.round(v*100)/100;
+}
+
+function getShipping(weight){
+
+    if(weight<=100) return 6.31;
+    if(weight<=250) return 7.31;
+    if(weight<=500) return 12.31;
+    if(weight<=600) return 14.81;
+    if(weight<=700) return 15.70;
+    if(weight<=800) return 16.59;
+    if(weight<=900) return 17.51;
+    if(weight<=1000) return 18.40;
+    if(weight<=1100) return 19.29;
+    if(weight<=1200) return 20.18;
+    if(weight<=1300) return 21.10;
+    if(weight<=1400) return 21.99;
+    if(weight<=1500) return 22.88;
+    if(weight<=1600) return 23.80;
+    if(weight<=1700) return 24.69;
+    if(weight<=2000) return 26.32;
+    if(weight<=2100) return 28.30;
+    if(weight<=2200) return 29.19;
+    if(weight<=2500) return 32.78;
+    if(weight<=3000) return 37.29;
+    if(weight<=4000) return 46.30;
+
+    return 0;
+}
+
+function calc(){
+
+    var price = parseFloat(document.getElementById("price").value)||0;
+    var listingShip = parseFloat(document.getElementById("listingShip").value)||0;
+    var weight = parseFloat(document.getElementById("weight").value)||0;
+    var ad = parseFloat(document.getElementById("ad").value)||0;
+    var discount = parseFloat(document.getElementById("discount").value)||0;
+    var purchase = parseFloat(document.getElementById("purchase").value)||0;
+
+    var discountAmount = price * discount / 100;
+    var priceAfterDiscount = price - discountAmount;
+
+    var base = priceAfterDiscount + listingShip;
+
+    var adAmount = base * ad / 100;
+    var afterAd = base - adAmount;
+
+    var auctionFee = afterAd * 0.21;
+    var afterAuction = afterAd - auctionFee;
+
+    var transactionFee = afterAuction * 0.05;
+
+    var received = afterAuction - transactionFee;
+
+    var shippingCost = getShipping(weight);
+
+    var totalFees =
+        discountAmount +
+        adAmount +
+        auctionFee +
+        transactionFee;
+
+    var profit =
+        received -
+        shippingCost -
+        purchase;
+
+    document.getElementById("received").innerHTML =
+        "$ " + round2(received).toFixed(2);
+
+    document.getElementById("fees").innerHTML =
+        "$ " + round2(totalFees).toFixed(2);
+
+    document.getElementById("shipping").innerHTML =
+        "$ " + round2(shippingCost).toFixed(2);
+
+    document.getElementById("profit").innerHTML =
+        "$ " + round2(profit).toFixed(2);
+}
+</script>
+</head>
+
+<body>
+
+<h2>Калькулятор прибыли eBay</h2>
+
+<div class="inputBlock">
+
+<label>Цена товара ($)</label>
+<input id="price">
+
+<label>Стоимость доставки в листинге ($)</label>
+<input id="listingShip">
+
+<label>Вес товара (г)</label>
+<input id="weight">
+
+<label>Реклама (%)</label>
+<input id="ad">
+
+<label>Скидка покупателю (%)</label>
+<input id="discount">
+
+<label>Закупочная стоимость ($)</label>
+<input id="purchase">
+
+<br><br>
+
+<button onclick="calc()">Рассчитать</button>
+
+</div>
+
+<div class="resultBlock">
+
+<div class="result">
+Поступит на счёт:
+<span id="received">$ 0.00</span>
+</div>
+
+<div class="result">
+Сумма всех вычетов:
+<span id="fees">$ 0.00</span>
+</div>
+
+<div class="result">
+Стоимость доставки:
+<span id="shipping">$ 0.00</span>
+</div>
+
+<div class="result">
+Итоговый остаток (прибыль):
+<span id="profit">$ 0.00</span>
+</div>
+
+</div>
+
+</body>
+</html>
